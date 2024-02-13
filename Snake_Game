@@ -1,0 +1,127 @@
+import pygame
+import random
+import time
+
+window_x = 750
+window_y = 550
+pygame.display.set_caption("Snake game by Angelina")
+
+
+def initialize():
+    """Initialize the pygame window and return the display object"""
+    pygame.init()
+    display = pygame.display.set_mode((window_x, window_y))
+    return display
+
+
+display = initialize()
+
+speed = 10
+timer = pygame.time.Clock()
+
+# Define colors used in the game
+green = pygame.Color(85, 215, 105)
+pink = pygame.Color(225, 65, 120)
+orange = pygame.Color(225, 155, 75)
+black = pygame.Color(0, 0, 0)
+
+# Define message display
+def message(msg, color):
+    """Initialize the message displayed on the screen when the game ends"""
+    text_font = pygame.font.SysFont("Verdana", 20)
+    message = text_font.render(msg, True, color)
+    display.blit(message, [200, 240])
+
+# Define the scoreboard
+def scoreboard(score):
+    "Initialize the scoreboard"
+    score_font = pygame.font.SysFont("Verdana", 20)
+    points = score_font.render("Score: " + str(score), True, black)
+    display.blit(points, [10, 10])
+
+# Create the snake
+initial_snake = 20
+def snake(initial_snake, list):
+    """Initialize the snake"""
+    for i in list:
+        pygame.draw.rect(display, pink, [i[0], i[1], initial_snake, initial_snake])
+
+# Define the structure
+def game():
+    """Initialize the game"""
+    game_over = False
+    restart = False
+    # Starting coordinates
+    snake_x = 320
+    snake_y = 240
+    # Movement
+    x_change = 0
+    y_change = 0
+    
+    snake_list = []
+    length = 1
+
+    fruit_x = random.randrange(window_x // initial_snake) * initial_snake
+    fruit_y = random.randrange(window_y // initial_snake) * initial_snake
+    # Main loop, first checks for game termination and interruption
+    while not game_over:
+    
+        while restart == True:
+            display.fill(green)
+            message("Good game! New game(P) or Quit(Q)", black)
+            scoreboard(length-1)
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.key == pygame.K_q:
+                    game_over = True
+                    restart = False
+                if event.key == pygame.K_p:
+                    game()
+        # Control the snake
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
+                    y_change = -initial_snake
+                    x_change = 0
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                    y_change = initial_snake
+                    x_change = 0
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    x_change = initial_snake
+                    y_change = 0
+                elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    x_change = -initial_snake
+                    y_change = 0
+        # If hitting the edge:
+        if snake_x >= 750 or  snake_x < 0 or snake_y >= 550 or snake_y < 0:
+            restart = True
+        # Move the snake in the current direction
+        snake_x += x_change
+        snake_y += y_change        
+        # Eating the fruit and increasing the length
+        display.fill(green)
+        pygame.draw.rect(display, orange, [fruit_x, fruit_y, 15 , 15])
+        if snake_x == fruit_x and snake_y == fruit_y:
+            fruit_x = random.randrange(window_x // initial_snake) * initial_snake
+            fruit_y = random.randrange(window_y // initial_snake) * initial_snake
+            length += 1
+        snake_body = []
+        snake_body.append(snake_x)
+        snake_body.append(snake_y)
+        snake_list.append(snake_body)
+        if len(snake_list) > length:
+            del snake_list[0]
+        # If the snake hits itself
+        for i in snake_list[:-1]:
+            if i == snake_body:
+                restart = True
+        
+        snake(initial_snake, snake_list)
+        scoreboard(length-1)
+        pygame.display.update()
+
+        timer.tick(speed)
+
+game()
