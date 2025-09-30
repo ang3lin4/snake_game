@@ -1,6 +1,6 @@
-# Simple SnakeGame with Python
+# Simple Snake Game with Python
 
-The simple SnakeGame is made with Python using Pygame-library. The game features a colorful interface, score tracking and a restart option. 🐍🍎
+The simple Snake Game is made with Python using Pygame-library. The game features a colorful interface, score tracking and a restart option. 🐍🍎
 
 ## Features💡
 - Move the snake using the arrow keys or WASD keys.
